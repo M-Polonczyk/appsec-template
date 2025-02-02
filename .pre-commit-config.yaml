@@ -1,0 +1,11 @@
+exclude: "^docs/|/migrations/|devcontainer.json"
+default_stages: [pre-commit]
+
+repos:
+  - repo: ""
+
+# sets up .pre-commit-ci.yaml to ensure pre-commit dependencies stay up to date
+ci:
+  autoupdate_schedule: weekly
+  skip: []
+  submodules: false

@@ -1,0 +1,8 @@
+- nodejs-extensions:
+    - .js
+
+  ignore-filenames:
+    - notification.types.js
+
+  ignore-paths:
+    - node_modules

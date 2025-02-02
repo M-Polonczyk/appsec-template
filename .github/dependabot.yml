@@ -1,0 +1,31 @@
+# Config for Dependabot updates. See Documentation here:
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+# For supported package ecosystems, see here:
+# https://docs.github.com/en/code-security/dependabot/ecosystems-supported-by-dependabot/supported-ecosystems-and-repositories#supported-ecosystems-and-repositories
+
+version: 2
+updates:
+  # Update GitHub actions in workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    # Every weekday
+    schedule:
+      interval: "daily"
+
+  # Enable version updates for Docker
+  # We need to specify each Dockerfile in a separate entry because Dependabot doesn't
+  # support wildcards or recursively checking subdirectories. Check this issue for updates:
+  # https://github.com/dependabot/dependabot-core/issues/2178
+  - package-ecosystem: "docker"
+    # Look for a `Dockerfile` in the `path/to/dir/` directory
+    directory: "path/to/dir/"
+    open-pull-requests-limit: 10
+    schedule:
+      interval: "daily"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+    labels:
+      - "update"

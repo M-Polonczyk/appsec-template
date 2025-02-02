@@ -1,0 +1,29 @@
+name: Run SAST (Static Application Security Testing)
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  sast:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code Repository
+      uses: actions/checkout@v2
+
+    - name: Bearer
+      uses: bearer/bearer-action@v2
+      with:
+        diff: true
+        scanner: sast,secrets
+        path: 'path/to/code (example: src)'
+        skip-path: 'path/to/skip'
+
+    # TODO: Setup SonarQube
+    - name: SonarQube Scan
+      uses: sonarsource/sonarqube-scan-action@master
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  # The secret token for the SonarQube project
+        SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}  # The URL of the SonarQube server
