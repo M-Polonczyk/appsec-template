@@ -1,0 +1,23 @@
+name: Build and Test
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code Repository
+      uses: actions/checkout@v2
+
+    - name: Set up 
+      run: Set up complete
+
+    - name: Build
+      run: Build complete
+
+    - name: Test
+      run: Test complete

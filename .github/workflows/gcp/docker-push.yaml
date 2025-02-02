@@ -1,0 +1,74 @@
+name: Create Docker image and publish to Artifact Registry 
+
+# Configures this workflow to run every time repository gets new commits on the main branch.
+on:
+  push:
+    branches:
+      - main
+
+# Defines 3 custom environment variables for the workflow. These are used for the GCP Container Registry domain, and a name for the Docker image that this workflow builds.
+env:
+  REPO_NAME: ${{ github.repository }} # The name of the repository. Be careful, because it has to be lowercase.
+  REGION: us-east1 # The region where the Artifact Registry is located.
+  SERVICE_NAME: hello-world # The name of the Coud Run service ${{ github.repository_id }}
+
+jobs:
+  docker-release:
+    name: Tagged Docker release to Google Artifact Registry
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - id: checkout
+        name: Checkout repository
+        uses: actions/checkout@v4
+
+      - id: auth
+        name: Authenticate with Google Cloud
+        uses: 'google-github-actions/auth@v2'
+        with:
+          token_format: access_token
+          workload_identity_provider: '${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}'
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com
+          access_token_lifetime: 300s
+
+      - name: Login to Artifact Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGION }}-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+
+      - id: docker-push-tagged
+        name: Tag Docker image and push to Google Artifact Registry
+        uses: docker/build-push-action@v6
+        with:
+          file: Dockerfile.prod
+          provenance: false
+          push: true
+          tags: |
+              ${{ env.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPO_NAME }}:${{ github.sha }}
+              ${{ env.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPO_NAME }}:latest
+
+      - name: Print Docker image URL
+        run: |
+          echo "Docker image URL: ${{ steps.docker-push-tagged }}"
+          echo "Steps Outputs URL: ${{ steps.docker-push-tagged.outputs }}"
+
+      # This step deploys newly built Docker image to Cloud Run service.
+      # It will be deleted and deploy will be triggered using cloud function.
+      - name: Deploy to Cloud Run
+        run: |
+          echo SERVICE_NAME $SERVICE_NAME
+          gcloud run deploy $SERVICE_NAME \
+            --image ${{ steps.docker-push-tagged.outputs }}
+
+      # (NOT TESTED) This step deploys newly built Docker image to GCE instance.
+      - name: Deploy on GCE
+        run: |
+          echo SERVICE_NAME $SERVICE_NAME
+          gcloud compute instances create-with-container $SERVICE_NAME \
+            --container-image ${{ steps.docker-push-tagged.outputs }}
