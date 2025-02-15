@@ -29,3 +29,93 @@ updates:
           - "version-update:semver-minor"
     labels:
       - "update"
+
+  # Go updates
+  - package-ecosystem: "gomod"
+    # Look for a `go.mod` in the root directory
+    directory: "/"
+    schedule:
+      interval: "daily"
+    # Ignore major and minor updates
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+    labels:
+      - "update"
+
+  # Gradle updates
+  - package-ecosystem: "gradle"
+    # Look for a `build.gradle` in the root directory
+    directory: "/"
+    schedule:
+      interval: "daily"
+    # Ignore major and minor updates
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+    labels:
+      - "update"
+
+  # Java updates
+  - package-ecosystem: "maven"
+    # Look for a `pom.xml` in the root directory
+    directory: "/"
+    schedule:
+      interval: "daily"
+    # Ignore major and minor updates
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+    labels:
+      - "update"
+
+  # Node.js updates
+  - package-ecosystem: "npm"
+    # Look for a `package.json` in the root directory
+    directory: "/"
+    schedule:
+      interval: "daily"
+    # Ignore major and minor updates
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+    labels:
+      - "update"
+
+  # Python updates
+  - package-ecosystem: "pip"
+    # Look for a `requirements.txt` in the root directory
+    directory: "/"
+    schedule:
+      interval: "daily"
+    # Ignore major and minor updates
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+    labels:
+      - "update"
+
+  # Rust updates
+  - package-ecosystem: "cargo"
+    # Look for a `Cargo.toml` in the root directory
+    directory: "/"
+    schedule:
+      interval: "daily"
+    # Ignore major and minor updates
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+    labels:
+      - "update"
